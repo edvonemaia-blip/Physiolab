@@ -1,0 +1,9 @@
+{
+  "name": "PhysioLab",
+  "short_name": "PhysioLab",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f8f7",
+  "theme_color": "#0f3d46",
+  "description": "Plataforma interativa para aprendizagem de Fisiologia Médica."
+}
