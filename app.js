@@ -1,41 +1,26 @@
-
-const modules=[
-{id:"neuro",icon:"⚡",title:"Neurofisiologia",sub:"Membrana, potencial de ação e sinapses"},
-{id:"muscular",icon:"💪",title:"Fisiologia muscular",sub:"Contração e acoplamento excitação-contração"},
-{id:"cardio",icon:"♥",title:"Cardiovascular",sub:"Coração, fluxo e pressão"},
-{id:"resp",icon:"◌",title:"Respiratória",sub:"Ventilação e trocas gasosas"},
-{id:"renal",icon:"≈",title:"Renal",sub:"Filtração e equilíbrio hidroeletrolítico"},
-{id:"endo",icon:"◆",title:"Endócrina",sub:"Hormônios e regulação"},
-{id:"gastro",icon:"↝",title:"Gastrointestinal",sub:"Motilidade, secreção e absorção"}
+const mods=[
+["neuro","🧠","Neurofisiologia","Membrana • potencial de ação • sinapses"],
+["muscle","💪","Fisiologia muscular","Contração • junção neuromuscular"],
+["cardio","🫀","Cardiovascular","Ciclo cardíaco • pressão • débito"],
+["resp","🫁","Respiratória","Ventilação • volumes • trocas gasosas"],
+["renal","💧","Renal","Néfron • filtração • ácido-base"],
+["endo","🧪","Endócrina","Hormônios • feedback • eixos"]
 ];
-const lesson={
-title:"Sinapse química",
-intro:"A sinapse química transforma um sinal elétrico pré-sináptico em sinal químico e, depois, em resposta pós-sináptica.",
-steps:["O potencial de ação chega ao terminal pré-sináptico.","Canais de Ca²⁺ dependentes de voltagem se abrem.","A entrada de Ca²⁺ favorece a fusão das vesículas.","O neurotransmissor é liberado na fenda sináptica.","O neurotransmissor liga-se a receptores pós-sinápticos.","A célula pós-sináptica modifica seu potencial de membrana."],
-questions:[
-{q:"O que desencadeia a abertura dos canais de Ca²⁺ pré-sinápticos?",a:["Chegada do potencial de ação","Ligação do neurotransmissor","Bomba Na⁺/K⁺"],c:0},
-{q:"Qual íon é decisivo para a liberação vesicular?",a:["Ca²⁺","Cl⁻","K⁺"],c:0},
-{q:"Onde o neurotransmissor é liberado?",a:["Fenda sináptica","Núcleo","Axônio pós-sináptico"],c:0},
-{q:"Se a entrada de Ca²⁺ for bloqueada, o efeito mais direto será:",a:["Menor liberação de neurotransmissor","Maior síntese de ATP","Aumento da mielina"],c:0}
-]};
-let s={view:"welcome",q:0,score:0,answered:false};
-const app=document.querySelector("#app");
-const data=JSON.parse(localStorage.getItem("physiolab")||'{"neuro":0}');
-const nav=()=>`<div class="bottom"><nav><button onclick="go('home')">Módulos</button><button onclick="go('review')">Revisar</button><button onclick="go('progress')">Progresso</button></nav></div>`;
+let s={view:"welcome",blockedNa:false,blockedK:false,stim:false};
+const app=document.querySelector("#app"), store=JSON.parse(localStorage.getItem("physiolab2")||'{"xp":0,"streak":1}');
+const nav=()=>`<div class="bottom"><nav><button onclick="go('home')">Início</button><button onclick="go('lab')">Laboratório</button><button onclick="go('progress')">Progresso</button></nav></div>`;
 const shell=(x,n=true)=>`<div class="shell">${x}</div>${n?nav():""}`;
-function go(v){s.view=v;s.answered=false;render();scrollTo(0,0)}
-function welcome(){return shell(`<section class="hero"><div class="tag">Laboratório de Fisiologia Médica</div><h1>Physio<br>Lab</h1><p>Entenda mecanismos, teste hipóteses e aprenda Fisiologia acompanhando sua evolução durante o semestre.</p><div class="card"><strong>Não decore apenas o resultado.</strong><p>Descubra o mecanismo por trás dele.</p></div><button class="primary" onclick="go('home')">Começar</button></section>`,false)}
-function home(){let pct=data.neuro||0;return shell(`<div class="top"><div><div class="tag">PhysioLab</div><h2>Laboratórios</h2></div><span class="pill">${pct}% Neuro</span></div><div class="card"><strong>Seu semestre</strong><p>Comece por Neurofisiologia. Os demais sistemas já estão preparados para receber as próximas aulas.</p><div class="progress"><span style="width:${pct}%"></span></div></div><div class="grid">${modules.map(m=>`<div class="card module" onclick="${m.id==="neuro"?"go('neuro')":"soon()"}"><div class="icon">${m.icon}</div><div><strong>${m.title}</strong><small>${m.sub}</small></div></div>`).join("")}</div>`)}
-function soon(){alert("Este laboratório será liberado conforme avançarmos no semestre.")}
-function neuro(){return shell(`<div class="top"><button class="back" onclick="go('home')">‹</button><span class="pill">Neurofisiologia</span></div><div class="tag">Laboratório 01</div><h2>Sinapse química</h2><p>${lesson.intro}</p><div class="card"><strong>🧠 Aprender o mecanismo</strong><p>Veja a sequência fisiológica antes de testar seu raciocínio.</p><button class="primary" onclick="go('lesson')">Abrir aula</button></div><div class="card"><strong>⚡ Desafio</strong><p>Preveja o que acontece quando modificamos uma etapa da sinapse.</p><button class="primary" onclick="startQuiz()">Praticar</button></div>`)}
-function lessonView(){return shell(`<div class="top"><button class="back" onclick="go('neuro')">‹</button><span class="pill">Mecanismo</span></div><div class="tag">Sinapse química</div><h2>Do impulso à resposta</h2><div class="card"><ol>${lesson.steps.map(x=>`<li style="margin:12px 0;line-height:1.45">${x}</li>`).join("")}</ol></div><div class="card"><strong>🔬 Pense como fisiologista</strong><p>Se uma etapa for bloqueada, tente prever todas as consequências que aparecem depois dela.</p></div><button class="primary" onclick="startQuiz()">Testar meu raciocínio</button>`)}
-function startQuiz(){s.q=0;s.score=0;s.answered=false;s.view="quiz";render();scrollTo(0,0)}
-function quiz(){const x=lesson.questions[s.q];return shell(`<div class="top"><button class="back" onclick="go('neuro')">‹</button><span class="pill">${s.q+1}/${lesson.questions.length}</span></div><div class="tag">Desafio fisiológico</div><h2>${x.q}</h2><div>${x.a.map((a,i)=>`<button class="secondary option" onclick="answer(${i},this)">${a}</button>`).join("")}</div><div id="feedback"></div>`)}
-function answer(i,el){if(s.answered)return;s.answered=true;let x=lesson.questions[s.q];document.querySelectorAll(".option").forEach((b,j)=>{if(j===x.c)b.classList.add("correct")});if(i===x.c){s.score++;}else el.classList.add("wrong");let last=s.q===lesson.questions.length-1;document.querySelector("#feedback").innerHTML=`<div class="card"><strong>${i===x.c?"✓ Correto":"Revise o mecanismo"}</strong><p>${i===x.c?"Boa. Agora pense no que aconteceria se essa etapa fosse bloqueada.":"A alternativa correta está destacada. Volte à sequência fisiológica e identifique onde o mecanismo foi interrompido."}</p></div><button class="primary" onclick="${last?"finish()":"next()"}">${last?"Ver resultado":"Próxima"}</button>`}
-function next(){s.q++;s.answered=false;render();scrollTo(0,0)}
-function finish(){data.neuro=Math.max(data.neuro||0,Math.round(s.score/lesson.questions.length*100));localStorage.setItem("physiolab",JSON.stringify(data));go("result")}
-function result(){let pct=Math.round(s.score/lesson.questions.length*100);return shell(`<div style="text-align:center;padding-top:45px"><div class="tag">Resultado</div><div class="score">${pct}%</div><h2>${s.score}/${lesson.questions.length} acertos</h2><p>Seu melhor resultado fica salvo neste aparelho.</p><button class="primary" onclick="go('home')">Voltar aos laboratórios</button><button class="secondary" onclick="startQuiz()">Refazer desafio</button></div>`)}
-function review(){return shell(`<div class="tag">Revisão inteligente</div><h2>Revisar</h2><div class="card"><strong>Próxima evolução</strong><p>Aqui entraremos com questões erradas, flashcards e repetição espaçada.</p></div>`)}
-function progress(){return shell(`<div class="tag">Meu desempenho</div><h2>Progresso</h2><div class="card"><div class="score" style="font-size:48px">${data.neuro||0}%</div><p>Melhor desempenho atual em Neurofisiologia.</p></div>`)}
-function render(){app.innerHTML=s.view==="welcome"?welcome():s.view==="home"?home():s.view==="neuro"?neuro():s.view==="lesson"?lessonView():s.view==="quiz"?quiz():s.view==="result"?result():s.view==="review"?review():progress()}
-render();
+function go(v){s.view=v;render();scrollTo(0,0)}
+function welcome(){return shell(`<section class="hero"><div class="tag">Laboratório de Fisiologia Médica</div><h1>Physio<br>Lab</h1><p>Entenda mecanismos, teste hipóteses e aprenda Fisiologia ao longo do semestre.</p><div class="card"><strong>Aprenda mexendo no sistema.</strong><p>Observe o normal, altere uma variável e tente prever o resultado.</p></div><button class="primary" onclick="go('home')">Entrar no laboratório</button></section>`,false)}
+function home(){return shell(`<div class="top"><div><div class="tag">Bom estudo 👋</div><h2>O que vamos entender hoje?</h2></div><span class="pill">${store.xp} XP</span></div><div class="card"><strong>🔥 Sequência: ${store.streak} dia</strong><p>Primeiro laboratório disponível: potencial de ação.</p><div class="meter"><span style="width:${Math.min(100,store.xp)}%"></span></div></div>${mods.map(m=>`<div class="card module" onclick="${m[0]=="neuro"?"go('neuro')":"soon()"}"><div class="ico">${m[1]}</div><div><strong>${m[2]}</strong><small>${m[3]}</small></div></div>`).join("")}`)}
+function soon(){alert("Este módulo será liberado conforme avançarmos nas aulas.")}
+function neuro(){return shell(`<div class="top"><button class="back" onclick="go('home')">‹</button><span class="pill">Neurofisiologia</span></div><div class="tag">Trilha 01</div><h2>Excitabilidade celular</h2><div class="card"><strong>1. Potencial de membrana</strong><p>Gradientes iônicos, permeabilidade e bomba Na⁺/K⁺.</p></div><div class="card"><strong>2. Potencial de ação</strong><p>Despolarização, repolarização e hiperpolarização.</p><button class="primary" onclick="go('lab')">Abrir simulador</button></div><div class="card"><strong>3. Sinapse química</strong><p>Ca²⁺, vesículas, neurotransmissores e receptores.</p></div>`)}
+function lab(){
+ let normal=!s.blockedNa&&!s.blockedK, v=s.stim?(s.blockedNa?-65:(s.blockedK?25:30)):-70;
+ let msg=!s.stim?"Aplique um estímulo para observar a resposta.":s.blockedNa?"Sem entrada adequada de Na⁺, a fase rápida de despolarização fica comprometida.":s.blockedK?"A despolarização ocorre, mas a repolarização fica comprometida sem a saída adequada de K⁺.":"O estímulo atingiu o limiar: ocorre despolarização seguida de repolarização.";
+ return shell(`<div class="top"><button class="back" onclick="go('neuro')">‹</button><span class="pill">Simulador</span></div><div class="tag">Laboratório interativo</div><h2>Potencial de ação</h2><p>Altere os canais e tente prever o que acontecerá antes de estimular a membrana.</p><div class="simbox"><div class="note">Potencial aproximado da membrana</div><div class="voltage">${v} mV</div><div class="track"><div class="trace ${s.stim&&!s.blockedNa?"spike":""}"></div></div><div class="controls"><button class="${s.blockedNa?'on':''}" onclick="toggleNa()">Bloquear Na⁺</button><button class="${s.blockedK?'on':''}" onclick="toggleK()">Bloquear K⁺</button></div><button class="primary" onclick="stimulate()">⚡ Aplicar estímulo</button></div><div class="card"><strong>O que aconteceu?</strong><p>${msg}</p></div><button class="secondary" onclick="resetLab()">↻ Restaurar condições normais</button>`)}
+function toggleNa(){s.blockedNa=!s.blockedNa;s.stim=false;render()} function toggleK(){s.blockedK=!s.blockedK;s.stim=false;render()}
+function stimulate(){s.stim=true;if(!s.blockedNa){store.xp=Math.min(999,store.xp+5);localStorage.setItem("physiolab2",JSON.stringify(store))}render()}
+function resetLab(){s.blockedNa=false;s.blockedK=false;s.stim=false;render()}
+function progress(){return shell(`<div class="tag">Meu PhysioLab</div><h2>Progresso</h2><div class="card"><div style="font-size:46px;font-weight:900;color:var(--accent)">${store.xp} XP</div><p>Experimentos e atividades concluídos neste aparelho.</p></div><div class="card"><strong>🧠 Neurofisiologia</strong><p>Laboratório de potencial de ação disponível.</p></div>`)}
+function render(){app.innerHTML=s.view=="welcome"?welcome():s.view=="home"?home():s.view=="neuro"?neuro():s.view=="lab"?lab():progress()} render();

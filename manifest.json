@@ -4,6 +4,6 @@
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f4f8f7",
-  "theme_color": "#0f3d46",
-  "description": "Plataforma interativa para aprendizagem de Fisiologia Médica."
+  "theme_color": "#103c43",
+  "description": "Laboratório interativo para aprendizagem de Fisiologia Médica."
 }
