@@ -3,7 +3,6 @@
   "short_name": "PhysioLab",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f4f8f7",
   "theme_color": "#103c43",
-  "description": "Laboratório interativo para aprendizagem de Fisiologia Médica."
+  "background_color": "#f4f8f7"
 }
